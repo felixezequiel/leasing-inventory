@@ -6,6 +6,7 @@ alwaysApply: true
 
 # Rules for client folder
 
+- Entities shared between server and client must be declared and used directly from shared
 - System design must be used in all layouts
 - You must ensure good code readability by always using clean code.
 - Component reading complexity should be low, breaking components down into their unique responsibilities
