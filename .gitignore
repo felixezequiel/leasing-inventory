@@ -1,0 +1,44 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# TypeScript
+*.tsbuildinfo
+dist/
+build/
+
+# Expo/React Native
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# OS
+.DS_Store
+*.pem
+
+# Misc
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+coverage/ 
