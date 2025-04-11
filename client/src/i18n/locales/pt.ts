@@ -1,0 +1,35 @@
+export default {
+  auth: {
+    welcome_back: 'Bem-vindo de Volta',
+    create_account: 'Criar Conta',
+    reset_password: 'Redefinir Senha',
+    email: 'E-mail',
+    password: 'Senha',
+    confirm_password: 'Confirmar Senha',
+    name: 'Nome',
+    enter_email: 'Digite seu e-mail',
+    enter_password: 'Digite sua senha',
+    enter_name: 'Digite seu nome',
+    confirm_your_password: 'Confirme sua senha',
+    sign_in: 'Entrar',
+    send_recovery_email: 'Enviar E-mail de Recuperação',
+    forgot_password: 'Esqueceu a senha?',
+    dont_have_account: 'Não tem uma conta? Cadastre-se',
+    already_have_account: 'Já tem uma conta? Entre',
+    back_to_sign_in: 'Voltar para o Login',
+    continue_with_google: 'Continuar com Google',
+    or: 'ou',
+  },
+  errors: {
+    passwords_dont_match: 'As senhas não coincidem',
+    invalid_reset_token: 'Token de redefinição inválido',
+    generic_error: 'Ocorreu um erro',
+  },
+  success: {
+    password_reset: 'Senha Redefinida com Sucesso',
+    password_reset_message: 'Sua senha foi redefinida com sucesso. Você já pode fazer login com sua nova senha.',
+  },
+  buttons: {
+    go_to_login: 'Ir para o Login',
+  },
+}; 

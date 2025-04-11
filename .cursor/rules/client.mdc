@@ -13,3 +13,4 @@ alwaysApply: true
 - Component performance is crucial, so data structures should be used strategically, such as Set Map or even the tree concept.
 - Ternaries should be avoided
 - Conditionals should always happen with declarative variables
+- All client-facing text must use multi-language architecture

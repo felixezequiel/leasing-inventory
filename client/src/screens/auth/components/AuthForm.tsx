@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { AppTheme, Input } from '../../../design-system';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 type AuthMode = 'login' | 'register' | 'recovery';
 
@@ -29,24 +30,26 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   onTogglePassword,
   theme,
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <>
       {mode === 'register' && (
         <Input
-          label="Name"
+          label={t('auth.name')}
           value={formData.name}
           onChangeText={(value) => onUpdateField('name', value)}
-          placeholder="Enter your name"
+          placeholder={t('auth.enter_name')}
           autoCapitalize="words"
           containerStyle={styles.input}
         />
       )}
 
       <Input
-        label="Email"
+        label={t('auth.email')}
         value={formData.email}
         onChangeText={(value) => onUpdateField('email', value)}
-        placeholder="Enter your email"
+        placeholder={t('auth.enter_email')}
         keyboardType="email-address"
         autoCapitalize="none"
         containerStyle={styles.input}
@@ -54,10 +57,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
       {mode !== 'recovery' && (
         <Input
-          label="Password"
+          label={t('auth.password')}
           value={formData.password}
           onChangeText={(value) => onUpdateField('password', value)}
-          placeholder="Enter your password"
+          placeholder={t('auth.enter_password')}
           secureTextEntry={!showPassword}
           containerStyle={styles.input}
           endIcon={
@@ -73,10 +76,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
       {mode === 'register' && (
         <Input
-          label="Confirm Password"
+          label={t('auth.confirm_password')}
           value={formData.confirmPassword}
           onChangeText={(value) => onUpdateField('confirmPassword', value)}
-          placeholder="Confirm your password"
+          placeholder={t('auth.confirm_your_password')}
           secureTextEntry={!showPassword}
           containerStyle={styles.input}
         />

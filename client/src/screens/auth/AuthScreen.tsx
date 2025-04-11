@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { useTheme, Text, Button, Card } from '../../design-system';
 import { AuthForm } from './components/AuthForm';
 import { useAuth } from './hooks/useAuth';
 import { AuthFooter } from './components/AuthFooter';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '../../components/LanguageSelector';
 
 type AuthMode = 'login' | 'register' | 'recovery';
 
 export const AuthScreen = () => {
   const { theme } = useTheme();
+  const { t, i18n } = useTranslation();
   const { handleSubmit, handleGoogleLogin, isLoading, error } = useAuth();
   const [authState, setAuthState] = useState({
     mode: 'login' as AuthMode,
@@ -22,6 +25,13 @@ export const AuthScreen = () => {
       showPassword: false,
     },
   });
+
+  useEffect(() => {
+    console.log('Current language:', i18n.language);
+    console.log('Available languages:', i18n.languages);
+    console.log('Is initialized:', i18n.isInitialized);
+    console.log('Translation test:', t('auth.welcome_back'));
+  }, [i18n.language]);
 
   const updateFormData = (field: keyof typeof authState.formData, value: string) => {
     setAuthState(prev => ({
@@ -57,18 +67,18 @@ export const AuthScreen = () => {
 
   const getTitleText = () => {
     const titleMap = {
-      login: 'Welcome Back',
-      register: 'Create Account',
-      recovery: 'Reset Password'
+      login: t('auth.welcome_back'),
+      register: t('auth.create_account'),
+      recovery: t('auth.reset_password')
     };
     return titleMap[authState.mode];
   };
 
   const getSubmitButtonText = () => {
     const buttonTextMap = {
-      login: 'Sign In',
-      register: 'Create Account',
-      recovery: 'Send Recovery Email'
+      login: t('auth.sign_in'),
+      register: t('auth.create_account'),
+      recovery: t('auth.send_recovery_email')
     };
     return buttonTextMap[authState.mode];
   };
@@ -118,7 +128,7 @@ export const AuthScreen = () => {
           <View style={styles.dividerContainer}>
             <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
             <Text variant="body2" style={{ color: theme.colors.textSecondary, marginHorizontal: theme.spacing.sm }}>
-              or
+              {t('auth.or')}
             </Text>
             <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
           </View>
@@ -127,7 +137,7 @@ export const AuthScreen = () => {
             variant="outlined"
             onPress={handleGoogleLogin}
             icon="google"
-            label="Continue with Google"
+            label={t('auth.continue_with_google')}
             size="large"
             fullWidth
           />
@@ -175,5 +185,14 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
+  },
+  debugContainer: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    alignItems: 'center',
   },
 }); 

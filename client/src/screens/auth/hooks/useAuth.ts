@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useLoginAuth } from './useLoginAuth';
+import { useRegisterAuth } from './useRegisterAuth';
+import { useRecoveryAuth } from './useRecoveryAuth';
 
 type AuthMode = 'login' | 'register' | 'recovery';
 
@@ -10,85 +13,36 @@ interface FormData {
 }
 
 export const useAuth = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const loginAuth = useLoginAuth();
+  const registerAuth = useRegisterAuth();
+  const recoveryAuth = useRecoveryAuth();
 
   const handleSubmit = async (mode: AuthMode, formData: FormData) => {
-    setError(null);
-    setIsLoading(true);
-
     try {
-      if (mode === 'login') {
-        const response = await fetch('http://localhost:3000/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+      switch (mode) {
+        case 'login':
+          return await loginAuth.handleLogin({
             email: formData.email,
             password: formData.password,
-          }),
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        // TODO: Save token and redirect using global state management
-      } else if (mode === 'register') {
-        if (formData.password !== formData.confirmPassword) {
-          throw new Error('Passwords do not match');
-        }
-
-        const response = await fetch('http://localhost:3000/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name,
+          });
+        case 'register':
+          return await registerAuth.handleRegister(formData);
+        case 'recovery':
+          return await recoveryAuth.handleRecovery({
             email: formData.email,
-            password: formData.password,
-          }),
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        // TODO: Save token and redirect using global state management
-      } else if (mode === 'recovery') {
-        const response = await fetch('http://localhost:3000/auth/forgot-password', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: formData.email }),
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        alert('Recovery email sent! Please check your inbox.');
+          });
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      // Errors are already handled by individual hooks
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3000/auth/google';
-  };
+  const isLoading = loginAuth.isLoading || registerAuth.isLoading || recoveryAuth.isLoading;
+  const error = loginAuth.error || registerAuth.error || recoveryAuth.error;
 
   return {
     handleSubmit,
-    handleGoogleLogin,
+    handleGoogleLogin: loginAuth.handleGoogleLogin,
     isLoading,
     error,
   };
