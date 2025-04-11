@@ -3,7 +3,7 @@ import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { config } from '@/config/env';
 import { useTranslation } from 'react-i18next';
-import { EventRegister } from 'react-native-event-listeners';
+import eventEmitter from '@/utils/events';
 
 export const useSocialAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +34,7 @@ export const useSocialAuth = () => {
         } else if (token) {
           await AsyncStorage.setItem('auth_token', token);
           // Emit auth success event
-          EventRegister.emit('auth-success', {
+          eventEmitter.emit('auth-success', {
             provider,
             token
           });
