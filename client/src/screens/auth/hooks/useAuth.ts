@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useLoginAuth } from './useLoginAuth';
 import { useRegisterAuth } from './useRegisterAuth';
 import { useRecoveryAuth } from './useRecoveryAuth';
@@ -40,8 +39,8 @@ export const useAuth = () => {
     }
   };
 
-  const isLoading = loginAuth.isLoading || registerAuth.isLoading || recoveryAuth.isLoading;
-  const error = loginAuth.error || registerAuth.error || recoveryAuth.error;
+  const isLoading = loginAuth.isLoading ?? registerAuth.isLoading ?? recoveryAuth.isLoading;
+  const error = loginAuth.error ?? registerAuth.error ?? recoveryAuth.error;
 
   return {
     handleSubmit,

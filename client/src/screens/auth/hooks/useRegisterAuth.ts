@@ -39,10 +39,10 @@ export const useRegisterAuth = () => {
 
       const responseData = await response.json();
       if (responseData.error) {
+        console.log(responseData.error);
         throw new Error(responseData.error);
       }
 
-      // TODO: Save token and redirect using global state management
       return responseData;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('errors.generic_error');

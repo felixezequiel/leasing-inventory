@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { useTheme, Text, Button, Card } from '../../design-system';
 import { AuthForm } from './components/AuthForm';
@@ -10,7 +10,7 @@ type AuthMode = 'login' | 'register' | 'recovery';
 
 export const AuthScreen = () => {
   const { theme } = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { handleSubmit, handleGoogleLogin, isLoading, error } = useAuth();
   const [authState, setAuthState] = useState({
     mode: 'login' as AuthMode,
@@ -24,13 +24,6 @@ export const AuthScreen = () => {
       showPassword: false,
     },
   });
-
-  useEffect(() => {
-    console.log('Current language:', i18n.language);
-    console.log('Available languages:', i18n.languages);
-    console.log('Is initialized:', i18n.isInitialized);
-    console.log('Translation test:', t('auth.welcome_back'));
-  }, [i18n.language]);
 
   const updateFormData = (field: keyof typeof authState.formData, value: string) => {
     setAuthState(prev => ({
