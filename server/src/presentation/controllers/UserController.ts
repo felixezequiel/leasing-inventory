@@ -1,11 +1,14 @@
-import { Body, Delete, Get, JsonController, Param, Post, Put } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
 import { UserService } from '@application/services/UserService';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
 import { CreateUserDto, UpdateUserDto } from '@shared/dtos/UserDto';
+import { Protected, Public, CurrentUser } from '../decorators/auth.decorator';
+import { User } from '@domain/entities/User';
 
-@JsonController('/users')
+@Controller('/users')
+@Protected()
 export class UserController {
-  private userService: UserService;
+  private readonly userService: UserService;
 
   constructor() {
     // Em um cenário real, isso seria injetado por um container DI
@@ -31,6 +34,7 @@ export class UserController {
   }
 
   @Post()
+  @Public()
   async createUser(@Body() createUserDto: CreateUserDto) {
     try {
       const user = await this.userService.createUser(createUserDto);
@@ -41,7 +45,16 @@ export class UserController {
   }
 
   @Put('/:id')
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: User
+  ) {
+    // Verifica se o usuário está tentando atualizar seu próprio perfil
+    if (id !== currentUser.id) {
+      return { error: 'You can only update your own profile' };
+    }
+
     const user = await this.userService.updateUser(id, updateUserDto);
     
     if (!user) {
@@ -52,7 +65,15 @@ export class UserController {
   }
 
   @Delete('/:id')
-  async deleteUser(@Param('id') id: string) {
+  async deleteUser(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: User
+  ) {
+    // Verifica se o usuário está tentando deletar seu próprio perfil
+    if (id !== currentUser.id) {
+      return { error: 'You can only delete your own profile' };
+    }
+
     const success = await this.userService.deleteUser(id);
     
     if (!success) {

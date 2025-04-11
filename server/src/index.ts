@@ -4,9 +4,15 @@ import { useExpressServer } from 'routing-controllers';
 import path from 'path';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import passport from 'passport';
+import dotenv from 'dotenv';
+
+// Carrega as variáveis de ambiente
+dotenv.config();
 
 // Importa a configuração do servidor
 import { serverConfig } from '@infra/config/server.config';
+import { AuthMiddleware } from './presentation/middlewares/auth.middleware';
 
 async function bootstrap() {
   // Cria a instância do Express
@@ -16,11 +22,12 @@ async function bootstrap() {
   app.use(cors());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(passport.initialize());
 
   // Configura o routing-controllers
   useExpressServer(app, {
-    controllers: [path.join(__dirname, 'presentation/controllers/**/*.controller.{ts,js}')],
-    middlewares: [path.join(__dirname, 'presentation/middlewares/**/*.middleware.{ts,js}')],
+    controllers: [path.join(__dirname, 'presentation/controllers/**/*.{ts,js}')],
+    middlewares: [AuthMiddleware],
     defaultErrorHandler: false,
   });
 
@@ -31,6 +38,4 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch(error => {
-  console.error('Erro ao iniciar o servidor:', error);
-}); 
+bootstrap().catch(console.error); 

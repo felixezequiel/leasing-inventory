@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Rules for server folder
+
+- You should consider using decorators when it makes sense to simplify the logic and understanding of the code for future maintenance.
+- You should always use the current system architecture as a basis.
+- The project does not use nestJs, only express and custom decorators.
+
