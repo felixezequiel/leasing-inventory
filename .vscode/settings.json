@@ -1,3 +1,11 @@
 {
-  "dotenv.enableAutocloaking": false
+  "dotenv.enableAutocloaking": false,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "inventory",
+      "database": "server/database.sqlite"
+    }
+  ]
 }
