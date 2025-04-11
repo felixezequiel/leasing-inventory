@@ -1,9 +1,5 @@
 import { connectDatabase } from './sequelize';
 import { runMigrations } from './sequelize/migrator';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execPromise = promisify(exec);
 
 export async function initializeDatabase(): Promise<void> {
   try {
@@ -12,12 +8,6 @@ export async function initializeDatabase(): Promise<void> {
     
     // Run migrations
     await runMigrations();
-    
-    // Run seeders if in development
-    if (process.env.NODE_ENV === 'development') {
-      await execPromise('npm run db:seed:all');
-      console.log('Database seeded successfully');
-    }
     
     console.log('Database initialized successfully');
   } catch (error) {
