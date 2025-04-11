@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# All folders
+
+- Use coalescing nullish operator
