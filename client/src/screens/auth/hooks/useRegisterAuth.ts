@@ -1,11 +1,9 @@
 import { config } from '@/config/env';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { RegisterDto } from '@shared/dtos/AuthDto';
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
+interface RegisterData extends RegisterDto {
   confirmPassword: string;
 }
 

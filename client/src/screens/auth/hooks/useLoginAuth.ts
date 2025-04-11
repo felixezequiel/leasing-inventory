@@ -2,11 +2,7 @@ import { config } from '@/config/env';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSocialAuth } from './useSocialAuth';
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+import { LoginDto } from '@shared/dtos/AuthDto';
 
 export const useLoginAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +10,7 @@ export const useLoginAuth = () => {
   const { t } = useTranslation();
   const socialAuth = useSocialAuth();
 
-  const handleLogin = async (credentials: LoginCredentials) => {
+  const handleLogin = async (credentials: LoginDto) => {
     setError(null);
     setIsLoading(true);
 

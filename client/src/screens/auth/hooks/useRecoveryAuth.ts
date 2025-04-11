@@ -1,17 +1,14 @@
 import { config } from '@/config/env';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-interface RecoveryData {
-  email: string;
-}
+import { ForgotPasswordDto } from '@shared/dtos/AuthDto';
 
 export const useRecoveryAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  const handleRecovery = async (data: RecoveryData) => {
+  const handleRecovery = async (data: ForgotPasswordDto) => {
     setError(null);
     setIsLoading(true);
 

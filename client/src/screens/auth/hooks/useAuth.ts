@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLoginAuth } from './useLoginAuth';
 import { useRegisterAuth } from './useRegisterAuth';
 import { useRecoveryAuth } from './useRecoveryAuth';
+import { LoginDto, RegisterDto, ForgotPasswordDto } from '@shared/dtos/AuthDto';
 
 type AuthMode = 'login' | 'register' | 'recovery';
 
@@ -21,16 +22,18 @@ export const useAuth = () => {
     try {
       switch (mode) {
         case 'login':
-          return await loginAuth.handleLogin({
-            email: formData.email,
-            password: formData.password,
-          });
+          return await loginAuth.handleLogin(
+            new LoginDto(formData.email, formData.password)
+          );
         case 'register':
-          return await registerAuth.handleRegister(formData);
-        case 'recovery':
-          return await recoveryAuth.handleRecovery({
-            email: formData.email,
+          return await registerAuth.handleRegister({
+            ...new RegisterDto(formData.name, formData.email, formData.password),
+            confirmPassword: formData.confirmPassword
           });
+        case 'recovery':
+          return await recoveryAuth.handleRecovery(
+            new ForgotPasswordDto(formData.email)
+          );
       }
     } catch (error) {
       // Errors are already handled by individual hooks

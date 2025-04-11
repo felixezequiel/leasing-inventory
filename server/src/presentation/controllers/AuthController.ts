@@ -7,26 +7,7 @@ import nodemailer from 'nodemailer';
 import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
 import { Public } from '../decorators/auth.decorator';
-
-interface LoginDto {
-  email: string;
-  password: string;
-}
-
-interface RegisterDto {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface ForgotPasswordDto {
-  email: string;
-}
-
-interface ResetPasswordDto {
-  token: string;
-  password: string;
-}
+import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto } from '@shared/dtos/AuthDto';
 
 @Controller('/auth')
 export class AuthController {

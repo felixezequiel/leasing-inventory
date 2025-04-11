@@ -5,7 +5,6 @@ import { AuthForm } from './components/AuthForm';
 import { useAuth } from './hooks/useAuth';
 import { AuthFooter } from './components/AuthFooter';
 import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '../../components/LanguageSelector';
 
 type AuthMode = 'login' | 'register' | 'recovery';
 
