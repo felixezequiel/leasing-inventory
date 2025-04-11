@@ -11,7 +11,7 @@ import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto } from '@sha
 
 @Controller('/auth')
 export class AuthController {
-  private userRepository: UserRepository;
+  private readonly userRepository: UserRepository;
   private transporter: nodemailer.Transporter;
 
   constructor() {

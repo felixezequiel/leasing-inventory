@@ -41,4 +41,8 @@ web-build/
 .env.development.local
 .env.test.local
 .env.production.local
-coverage/ 
+coverage/
+
+# Database
+*.sqlite
+*.sqlite-journal 
