@@ -8,6 +8,7 @@ import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
 import { Public } from '../decorators/auth.decorator';
 import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto } from '@shared/dtos/AuthDto';
+import axios from 'axios';
 
 @Controller('/auth')
 export class AuthController {
@@ -143,27 +144,197 @@ export class AuthController {
   @Get('/google')
   @Public()
   async googleAuth(@Req() req: Request, @Res() res: Response) {
-    return passport.authenticate('google', {
-      scope: ['profile', 'email'],
-    })(req, res);
+    // Em vez de retornar diretamente, vamos usar o middleware dentro de uma Promise
+    return new Promise((resolve) => {
+      passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        session: false
+      })(req, res, () => {
+        // Este callback será chamado após a autenticação
+        resolve(true);
+      });
+    });
   }
 
   @Get('/google/callback')
   @Public()
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-    passport.authenticate('google', { session: false }, (err: any, user: any) => {
-      if (err || !user) {
-        return res.redirect('/auth/login?error=google-auth-failed');
+    return new Promise((resolve) => {
+      passport.authenticate('google', { session: false }, (err: any, user: any) => {
+        if (err || !user) {
+          console.error('Google authentication failed:', err);
+          const errorRedirectUrl = process.env.CLIENT_URL 
+            ? `${process.env.CLIENT_URL}/auth?error=google-auth-failed` 
+            : '/auth/login?error=google-auth-failed';
+          res.redirect(errorRedirectUrl);
+          return resolve(true);
+        }
+
+        const token = jwt.sign(
+          { id: user.id },
+          process.env.JWT_SECRET || 'your-secret-key',
+          { expiresIn: '1d' }
+        );
+
+        // Check if the request comes from a mobile app (has a custom redirect scheme)
+        const userAgent = req.headers['user-agent'] || '';
+        const isMobileApp = req.query.platform === 'mobile' || 
+                           /expo|android|ios|mobile/i.test(userAgent);
+        
+        console.log('Authentication successful for user:', user.email);
+        console.log('Platform detection:', { 
+          isMobileApp, 
+          platform: req.query.platform, 
+          userAgent: userAgent.substring(0, 50) + '...' 
+        });
+
+        if (isMobileApp) {
+          // Mobile redirect using deep linking
+          const mobileScheme = process.env.MOBILE_SCHEME || 'leasing-inventory';
+          const redirectUrl = `${mobileScheme}://auth?token=${token}`;
+          console.log('Redirecting to mobile app:', redirectUrl);
+          res.redirect(redirectUrl);
+        } else {
+          // Web redirect
+          const webRedirectUrl = process.env.CLIENT_URL 
+            ? `${process.env.CLIENT_URL}?token=${token}` 
+            : `/?token=${token}`;
+          console.log('Redirecting to web client:', webRedirectUrl);
+          res.redirect(webRedirectUrl);
+        }
+        
+        resolve(true);
+      })(req, res, () => {});
+    });
+  }
+
+  @Post('/google/token')
+  @Public()
+  async exchangeGoogleToken(@Body() tokenRequest: { code: string; redirectUri: string }) {
+    try {
+      console.log('Recebida solicitação para trocar código Google por token');
+      
+      // Trocar o código do Google por tokens de acesso/ID
+      const tokenResponse = await axios.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code: tokenRequest.code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: tokenRequest.redirectUri,
+          grant_type: 'authorization_code'
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Extrair tokens
+      const { access_token, id_token } = tokenResponse.data;
+
+      // Obter informações do usuário
+      const userInfoResponse = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`
+          }
+        }
+      );
+
+      const { sub: googleId, email, name } = userInfoResponse.data;
+
+      // Buscar ou criar usuário
+      let user = await this.userRepository.findByGoogleId(googleId);
+      
+      if (!user) {
+        user = await this.userRepository.findByEmail(email);
+        
+        if (user) {
+          // Atualizar usuário existente com o googleId
+          user = await this.userRepository.update(user.id, {
+            googleId
+          });
+        } else {
+          // Criar novo usuário
+          user = await this.userRepository.create({
+            name,
+            email,
+            password: '',
+            googleId
+          });
+        }
       }
 
+      // Verificar se o usuário existe
+      if (!user) {
+        return { error: 'Falha ao criar ou atualizar usuário' };
+      }
+
+      // Gerar token JWT
       const token = jwt.sign(
         { id: user.id },
         process.env.JWT_SECRET || 'your-secret-key',
         { expiresIn: '1d' }
       );
 
-      // Redireciona para a página inicial com o token
-      res.redirect(`/?token=${token}`);
-    })(req, res);
+      return { token };
+    } catch (error: any) {
+      console.error('Erro ao trocar código por token:', error.response?.data || error.message);
+      return { error: 'Falha na autenticação do Google' };
+    }
+  }
+
+  @Post('/google/profile')
+  @Public()
+  async processGoogleProfile(@Body() profileData: { googleId: string; email: string; name: string }) {
+    try {
+      console.log('Recebida solicitação para processar perfil Google:', profileData);
+      
+      if (!profileData.googleId || !profileData.email) {
+        return { error: 'Dados de perfil Google incompletos' };
+      }
+
+      // Buscar ou criar usuário usando as informações do perfil
+      let user = await this.userRepository.findByGoogleId(profileData.googleId);
+      
+      if (!user) {
+        user = await this.userRepository.findByEmail(profileData.email);
+        
+        if (user) {
+          // Atualizar usuário existente com o googleId
+          user = await this.userRepository.update(user.id, {
+            googleId: profileData.googleId
+          });
+        } else {
+          // Criar novo usuário
+          user = await this.userRepository.create({
+            name: profileData.name,
+            email: profileData.email,
+            password: '',
+            googleId: profileData.googleId
+          });
+        }
+      }
+
+      // Verificar se o usuário existe
+      if (!user) {
+        return { error: 'Falha ao criar ou atualizar usuário' };
+      }
+
+      // Gerar token JWT
+      const token = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '1d' }
+      );
+
+      return { token };
+    } catch (error: any) {
+      console.error('Erro ao processar perfil Google:', error.message);
+      return { error: 'Falha ao processar autenticação Google' };
+    }
   }
 } 

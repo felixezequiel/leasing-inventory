@@ -1,14 +1,14 @@
 import { config } from '@/config/env';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSocialAuth } from './useSocialAuth';
+import { useGoogleAuth } from './useGoogleAuth';
 import { LoginDto } from '@shared/dtos/AuthDto';
 
 export const useLoginAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
-  const socialAuth = useSocialAuth();
+  const googleAuth = useGoogleAuth();
 
   const handleLogin = async (credentials: LoginDto) => {
     setError(null);
@@ -39,13 +39,13 @@ export const useLoginAuth = () => {
   };
 
   const handleGoogleLogin = () => {
-    socialAuth.handleSocialLogin('google');
+    googleAuth.handleGoogleLogin();
   };
 
   return {
     handleLogin,
     handleGoogleLogin,
-    isLoading: isLoading || socialAuth.isLoading,
-    error: error || socialAuth.error,
+    isLoading: isLoading || googleAuth.isLoading,
+    error: error || googleAuth.error,
   };
 }; 
