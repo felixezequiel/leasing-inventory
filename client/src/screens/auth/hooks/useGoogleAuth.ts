@@ -1,91 +1,90 @@
 import { useState } from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { config } from '@/config/env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import eventEmitter from '@/utils/events';
 import { useTranslation } from 'react-i18next';
-
-// Configurar WebBrowser para redirecionamentos OAuth
-WebBrowser.maybeCompleteAuthSession();
+import { useAuthRequest, makeRedirectUri } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+import { Platform } from 'react-native';
+import { config } from '@/config/env';
+import { EnvironmentControl } from '@/utils/environmentControl';
 
 export const useGoogleAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  // Configurar o hook de autenticação para Google, usando o ID do cliente
-  const [,response, promptAsync] = Google.useAuthRequest({
-    clientId: config.googleClientId,
-    redirectUri: 'leasing-inventory://auth'
+  // Configuração específica para a plataforma web
+  const webClientId = config.googleAuth.webClientId || '';
+  const androidClientId = config.googleAuth.androidClientId || '';
+  const iosClientId = config.googleAuth.iosClientId || '';
+  
+  const redirectUri = makeRedirectUri({
+    scheme: config.appScheme,
+    preferLocalhost: EnvironmentControl.isDevelopment(),
+  });
+  
+  // Use o cliente ID apropriado para cada plataforma
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: EnvironmentControl.isWeb() ? webClientId : config.googleAuth.expoClientId,
+    iosClientId: iosClientId,
+    androidClientId: androidClientId,
+    webClientId: webClientId,
+    redirectUri,
+    scopes: ['profile', 'email'],
   });
 
-  // Processar a resposta de autenticação quando mudar
-  const processAuthResult = async () => {
-    if (response?.type === 'success') {
-      setIsLoading(true);
-      try {
-        const accessToken = response.authentication?.accessToken;
-        console.log('Token de acesso recebido:', accessToken);
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const options = EnvironmentControl.isWeb()
+        ? { promptType: 'redirect' } // Para web, redirecionar em vez de usar popup
+        : { useProxy: true, showInRecents: true }; // Para mobile, usar proxy
         
-        // Obter informações do usuário usando o token de acesso
-        const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
+      const result = await promptAsync(options as any);
+      
+      if (result.type === 'success') {
+        const { authentication } = result;
         
+        // Obtém dados do usuário do Google
+        const userInfoResponse = await fetch(
+          'https://www.googleapis.com/userinfo/v2/me',
+          {
+            headers: { Authorization: `Bearer ${authentication?.accessToken}` },
+          }
+        );
+
         const userData = await userInfoResponse.json();
-        console.log('Dados do usuário:', userData);
-        
-        // Enviar os dados para o servidor para criar o usuário/obter token JWT
-        const serverResponse = await fetch(`${config.apiUrl}/auth/google/profile`, {
+
+        // Envia os dados para o servidor para processamento adicional
+        const response = await fetch(config.apiUrl + '/auth/google-login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
-            googleId: userData.id,
-            email: userData.email,
-            name: userData.name
-          })
+            token: authentication?.accessToken,
+            userData,
+          }),
         });
-        
-        const data = await serverResponse.json();
-        
-        if (data.token) {
-          // Armazenar o token e emitir evento de sucesso
-          await AsyncStorage.setItem('auth_token', data.token);
-          eventEmitter.emit('auth-success', { token: data.token });
-        } else {
-          throw new Error(data.error || 'Falha ao obter token');
+
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
         }
-      } catch (err: any) {
-        console.error('Erro ao processar autenticação Google:', err);
-        setError(err.message || t('errors.auth_failed'));
-      } finally {
+
+        return data;
+      } else if (result.type === 'error') {
+        throw new Error(result.error?.message || t('errors.auth_error'));
+      } else {
+        // Cancelado pelo usuário
         setIsLoading(false);
       }
-    } else if (response?.type === 'error') {
-      console.error('Erro na autenticação:', response.error);
-      setError(response.error?.message || t('errors.auth_cancelled'));
-    }
-  };
-
-  // Processar o resultado quando a resposta mudar
-  if (response) {
-    processAuthResult();
-  }
-
-  // Função para iniciar o fluxo de autenticação
-  const handleGoogleLogin = async () => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      
-      console.log('Iniciando autenticação Google...');
-      
-      // Iniciar o fluxo de autenticação
-      await promptAsync();
-    } catch (err: any) {
-      console.error('Erro ao iniciar autenticação:', err);
-      setError(err.message || t('errors.auth_failed'));
+    } catch (err) {
+      console.error('Google login error:', err);
+      const errorMessage = err instanceof Error ? err.message : t('errors.generic_error');
+      setError(errorMessage);
+      throw err;
+    } finally {
       setIsLoading(false);
     }
   };
