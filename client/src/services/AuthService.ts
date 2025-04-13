@@ -305,7 +305,8 @@ class AuthService {
           body: JSON.stringify({
             refreshToken: this.state.refreshToken
           }),
-        }).catch(e => console.error('Logout request failed:', e));
+        })
+        .catch(e => console.error('Logout request failed:', e))
       }
     } finally {
       // Clear auth state regardless of API result

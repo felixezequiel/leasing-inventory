@@ -25,7 +25,10 @@ async function bootstrap() {
     const app = express();
 
     // Middlewares globais
-    app.use(cors());
+    app.use(cors({
+      origin: 'http://localhost:8081',
+      credentials: true,
+    }));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(passport.initialize());

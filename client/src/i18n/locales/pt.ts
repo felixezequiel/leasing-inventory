@@ -32,4 +32,12 @@ export default {
   buttons: {
     go_to_login: 'Ir para o Login',
   },
+  home: {
+    logout: 'Sair',
+    languages: 'Idiomas',
+    portuguese: 'Português',
+    english: 'Inglês',
+    user_menu: 'Menu do Usuário',
+    close: 'Fechar',
+  },
 }; 

@@ -13,7 +13,7 @@ export default {
     confirm_your_password: 'Confirm your password',
     sign_in: 'Sign In',
     send_recovery_email: 'Send Recovery Email',
-    forgot_password: 'Forgot Password?',
+    forgot_password: 'Forgot password?',
     dont_have_account: "Don't have an account? Sign Up",
     already_have_account: 'Already have an account? Sign In',
     back_to_sign_in: 'Back to Sign In',
@@ -21,15 +21,23 @@ export default {
     or: 'or',
   },
   errors: {
-    passwords_dont_match: 'Passwords do not match',
+    passwords_dont_match: "Passwords don't match",
     invalid_reset_token: 'Invalid reset token',
     generic_error: 'An error occurred',
   },
   success: {
     password_reset: 'Password Reset Successful',
-    password_reset_message: 'Your password has been successfully reset. You can now log in with your new password.',
+    password_reset_message: 'Your password has been successfully reset. You can now login with your new password.',
   },
   buttons: {
     go_to_login: 'Go to Login',
+  },
+  home: {
+    logout: 'Logout',
+    languages: 'Languages',
+    portuguese: 'Portuguese',
+    english: 'English',
+    user_menu: 'User Menu',
+    close: 'Close',
   },
 }; 
