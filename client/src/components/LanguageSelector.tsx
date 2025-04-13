@@ -13,9 +13,7 @@ export const LanguageSelector = () => {
   const currentLanguage = i18n.language || 'pt';
 
   const handleLanguageChange = (languageCode: string) => {
-    console.log(`Alterando idioma para: ${languageCode}`);
     i18n.changeLanguage(languageCode);
-    console.log(`Idioma após mudança: ${i18n.language}`);
   };
 
   const getTextStyle = (isActive: boolean): TextStyle => ({

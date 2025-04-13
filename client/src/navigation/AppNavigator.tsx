@@ -8,20 +8,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import eventEmitter from '@/utils/events';
 import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from '@/design-system';
+import { linking } from './linking';
 
 const Stack = createNativeStackNavigator();
-
-// Configuração para deep linking
-const linking = {
-  prefixes: ['leasing-inventory://', 'https://yourdomain.com'],
-  config: {
-    screens: {
-      Auth: 'auth',
-      ResetPassword: 'reset-password',
-      Home: 'home',
-    },
-  },
-};
 
 export const AppNavigator = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -43,7 +32,6 @@ export const AppNavigator = () => {
 
     // Função para lidar com eventos de autenticação bem-sucedida
     const handleAuthSuccess = () => {
-      console.log('Auth success event received, navigating to Home');
       setIsAuthenticated(true);
     };
 

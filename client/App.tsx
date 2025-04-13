@@ -6,7 +6,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/i18n';
 import * as Localization from 'expo-localization';
-import { LogBox, Linking } from 'react-native';
+import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
 import * as WebBrowser from 'expo-web-browser';
 import { EnvironmentControl } from '@/utils/environmentControl';
@@ -28,18 +28,6 @@ export default function App() {
     
     // Define o idioma
     i18n.changeLanguage(languageToUse);
-
-    // Check URL that opened the app
-    const checkInitialURL = async () => {
-      try {
-        const initialURL = await Linking.getInitialURL();
-        console.log('App opened with URL:', initialURL);
-      } catch (e) {
-        console.error('Error getting initial URL:', e);
-      }
-    };
-    
-    checkInitialURL();
 
     // Limpeza ao desmontar o componente
     return () => {
