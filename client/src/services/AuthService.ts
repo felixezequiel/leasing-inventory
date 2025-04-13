@@ -464,6 +464,19 @@ class AuthService {
   }
 }
 
+// Método para verificar erros de resposta HTTP e lidar com perda de autenticação
+export const handleApiResponse = async (response: Response) => {
+  // Se a resposta for 401 (Unauthorized) ou 403 (Forbidden), deslogar o usuário
+  if (response.status === 401 || response.status === 403) {
+    console.log(`Autenticação expirada ou inválida: ${response.status}`);
+    await authService.logout();
+    eventEmitter.emit('auth-logout');
+    throw new Error('Autenticação expirada. Por favor, faça login novamente.');
+  }
+  
+  return response;
+};
+
 // Create singleton instance
 const authService = new AuthService();
 export default authService; 

@@ -5,6 +5,7 @@ import authService from '@/services/AuthService';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
+import eventEmitter from '@/utils/events';
 
 export const HomeScreen = () => {
   const { theme } = useTheme();
@@ -17,8 +18,14 @@ export const HomeScreen = () => {
   };
 
   const handleLogout = async () => {
-    await authService.logout();
-    setMenuVisible(false);
+    try {
+      setMenuVisible(false);
+      await authService.logout();
+      // Emite diretamente o evento para forçar redirecionamento imediato
+      eventEmitter.emit('auth-logout');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   const changeLanguage = (lang: string) => {

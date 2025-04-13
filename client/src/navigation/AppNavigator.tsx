@@ -35,12 +35,19 @@ export const AppNavigator = () => {
       setIsAuthenticated(true);
     };
 
-    // Adicionar listener para eventos de autenticação
+    // Função para lidar com eventos de logout ou perda de autenticação
+    const handleAuthLogout = () => {
+      setIsAuthenticated(false);
+    };
+
+    // Adicionar listeners para eventos de autenticação
     eventEmitter.on('auth-success', handleAuthSuccess);
+    eventEmitter.on('auth-logout', handleAuthLogout);
 
     return () => {
-      // Remover o listener quando o componente for desmontado
+      // Remover os listeners quando o componente for desmontado
       eventEmitter.removeListener('auth-success', handleAuthSuccess);
+      eventEmitter.removeListener('auth-logout', handleAuthLogout);
     };
   }, []);
 
