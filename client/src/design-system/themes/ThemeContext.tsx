@@ -32,8 +32,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     return themeMode === 'dark' ? DarkTheme : LightTheme;
   };
 
-  const [theme, setThemeState] = useState<AppTheme>(resolveTheme());
-  const isDarkMode = theme.dark;
+  const [themeState, setThemeState] = useState<AppTheme>(resolveTheme());
+  const isDarkMode = themeState.dark;
 
   // Atualiza o tema quando o modo do sistema ou o tema selecionado mudar
   useEffect(() => {
@@ -49,7 +49,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   };
 
   // Memoize the context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({ theme, isDarkMode, toggleTheme, setTheme }), [theme, isDarkMode]);
+  const contextValue = useMemo(() => ({ theme: themeState, isDarkMode, toggleTheme, setTheme }), [themeState, isDarkMode]);
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };

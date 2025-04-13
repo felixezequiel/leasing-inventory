@@ -9,6 +9,7 @@ import * as Localization from 'expo-localization';
 import { LogBox, Linking } from 'react-native';
 import { registerRootComponent } from 'expo';
 import * as WebBrowser from 'expo-web-browser';
+import { EnvironmentControl } from '@/utils/environmentControl';
 
 // Suppress warnings about deep linking
 LogBox.ignoreLogs(['Linking requires a build-time setting']);
@@ -16,7 +17,7 @@ LogBox.ignoreLogs(['Linking requires a build-time setting']);
 export default function App() {
   useEffect(() => {
     // Inicializa o WebBrowser (necessário para autenticação OAuth)
-    WebBrowser.warmUpAsync();
+    if (EnvironmentControl.isMobile()) WebBrowser.warmUpAsync();
 
     // Detecta o idioma do dispositivo
     const deviceLanguage = Localization.locale.split('-')[0]; // Pega apenas o código do idioma (ex: 'pt' de 'pt-BR')
