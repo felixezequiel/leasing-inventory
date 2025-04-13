@@ -11,6 +11,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public name!: string;
   public email!: string;
   public password!: string;
+  public googleId?: string;
   
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -39,19 +40,28 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+      field: 'google_id',
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
+      field: 'created_at',
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
+      field: 'updated_at',
     },
   },
   {
     sequelize,
     tableName: 'users',
     modelName: 'User',
+    timestamps: true,
   }
 );
 

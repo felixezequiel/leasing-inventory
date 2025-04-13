@@ -4,9 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResetPasswordScreen } from '../screens/auth/ResetPasswordScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
-import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import eventEmitter from '@/utils/events';
+import { ActivityIndicator, View } from 'react-native';
+import { useTheme } from '@/design-system';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,8 +24,8 @@ const linking = {
 };
 
 export const AppNavigator = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     // Verificar se o usuário já está autenticado ao iniciar o app
@@ -34,8 +35,7 @@ export const AppNavigator = () => {
         setIsAuthenticated(!!token);
       } catch (error) {
         console.error('Error checking auth token:', error);
-      } finally {
-        setIsLoading(false);
+        setIsAuthenticated(false);
       }
     };
 
@@ -56,16 +56,18 @@ export const AppNavigator = () => {
     };
   }, []);
 
+  // Show a loading indicator while checking auth status
+  if (isAuthenticated === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
   return (
-    <NavigationContainer
-      linking={linking}
-      fallback={<AuthScreen />}
-      onStateChange={(state) => {
-        console.log('Navigation state changed:', state);
-      }}
-    >
+    <NavigationContainer linking={linking}>
       <Stack.Navigator
-        initialRouteName={isAuthenticated ? "Home" : "Auth"}
         screenOptions={{
           headerShown: false,
         }}

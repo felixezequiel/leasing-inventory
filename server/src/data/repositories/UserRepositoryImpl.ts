@@ -18,6 +18,11 @@ export class UserRepositoryImpl implements UserRepository {
     return user ? user.toJSON() : null;
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    const user = await UserModel.findOne({ where: { googleId } });
+    return user ? user.toJSON() : null;
+  }
+
   async create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
     const user = await UserModel.create(userData);
     return user.toJSON();

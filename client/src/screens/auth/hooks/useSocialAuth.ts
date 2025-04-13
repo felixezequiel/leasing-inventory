@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Linking, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { config } from '@/config/env';
@@ -48,17 +48,17 @@ export const useSocialAuth = () => {
       }
     };
 
+    // First check if we have an initial URL (app opened via deep link)
+    handleInitialURL();
+
     // Listen for deep link events
     const subscription = Linking.addEventListener('url', ({ url }) => {
       console.log('Deep link received:', url);
       processURL(url);
     });
 
-    // Handle case where app was opened from a deep link
-    handleInitialURL();
-
+    // Cleanup
     return () => {
-      console.log('Removing deep link listener');
       subscription.remove();
     };
   }, [t]);
