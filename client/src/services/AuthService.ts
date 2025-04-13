@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { config } from '@/config/env';
-import * as SecureStore from 'expo-secure-store';
 import { EnvironmentControl } from '@/utils/environmentControl';
 import eventEmitter from '@/utils/events';
 import { LoginDto, RegisterDto } from '@shared/dtos/AuthDto';
 import { UserDTO } from '@shared/dtos/UserDto';
+import { secureStore } from '@/utils/secureStorage';
 
 interface TokensResponse {
   token: string;
@@ -97,8 +97,8 @@ class AuthService {
     } else {
       try {
         // Try to use secure store first
-        if (await SecureStore.isAvailableAsync()) {
-          await SecureStore.setItemAsync(key, value);
+        if (await secureStore.isAvailableAsync()) {
+          await secureStore.setItemAsync(key, value);
         } else {
           await AsyncStorage.setItem(key, value);
         }
@@ -115,8 +115,8 @@ class AuthService {
     } else {
       try {
         // Try secure store first
-        if (await SecureStore.isAvailableAsync()) {
-          return await SecureStore.getItemAsync(key);
+        if (await secureStore.isAvailableAsync()) {
+          return await secureStore.getItemAsync(key);
         } else {
           return await AsyncStorage.getItem(key);
         }
@@ -132,8 +132,8 @@ class AuthService {
       localStorage.removeItem(key);
     } else {
       try {
-        if (await SecureStore.isAvailableAsync()) {
-          await SecureStore.deleteItemAsync(key);
+        if (await secureStore.isAvailableAsync()) {
+          await secureStore.deleteItemAsync(key);
         }
         await AsyncStorage.removeItem(key);
       } catch (error) {

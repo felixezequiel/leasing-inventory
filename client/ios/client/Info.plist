@@ -34,7 +34,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+client</string>
+          <string>exp+leasing-inventory</string>
         </array>
       </dict>
     </array>
@@ -51,6 +51,8 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
