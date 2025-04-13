@@ -5,8 +5,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import { config } from '@/config/env';
 import { EnvironmentControl } from '@/utils/environmentControl';
 import * as WebBrowser from 'expo-web-browser';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import eventEmitter from '@/utils/events';
+import authService from '@/services/AuthService';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -121,6 +120,7 @@ export const useGoogleAuth = () => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(googleUserData),
+            credentials: 'include', // Important for cookies
           });
           
           const data = await serverResponse.json();
@@ -129,19 +129,17 @@ export const useGoogleAuth = () => {
             throw new Error(data.error);
           }
           
-          if (data.token) {
-            // Armazenar o token de autenticação
-            await AsyncStorage.setItem('auth_token', data.token);
-            
-            // Emitir evento de autenticação bem-sucedida que será capturado pelo AppNavigator
-            eventEmitter.emit('auth-success', { token: data.token });
-            console.log('Authentication successful, emitting auth-success event');
+          if (data.token && data.user) {
+            // Use the auth service to store token and user info
+            await authService['saveAuthState'](data.token, data.user, data.refreshToken);
+            setIsLoading(false);
+          } else {
+            throw new Error('Invalid response from server');
           }
         } catch (err) {
           console.error('Error processing Google authentication:', err);
           const errorMessage = err instanceof Error ? err.message : t('errors.generic_error');
           setError(errorMessage);
-        } finally {
           setIsLoading(false);
         }
       };
