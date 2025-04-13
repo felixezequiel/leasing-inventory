@@ -1,9 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
 import { UserService } from '@application/services/UserService';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
-import { CreateUserDto, UpdateUserDto } from '@shared/dtos/UserDto';
+import { CreateUserDto, UpdateUserDto, UserDTO } from '@shared/dtos/UserDto';
 import { Protected, Public, CurrentUser } from '../decorators/auth.decorator';
-import { UserDTO } from '@shared/dtos/UserDto';
 
 @Controller('/users')
 @Protected()
