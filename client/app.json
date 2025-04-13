@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "client",
-    "slug": "client",
+    "slug": "leasing-inventory",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.company.leasinginventory",
-      "associatedDomains": ["applinks:yourdomain.com"]
+      "associatedDomains": [
+        "applinks:yourdomain.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +36,10 @@
               "host": "auth"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -48,6 +53,7 @@
     },
     "expo": {
       "scheme": "leasing-inventory"
-    }
+    },
+    "owner": "felixezequiel48"
   }
 }

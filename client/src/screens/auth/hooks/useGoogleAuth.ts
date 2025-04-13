@@ -28,7 +28,7 @@ export const useGoogleAuth = () => {
     clientId: EnvironmentControl.isWeb() ? webClientId : config.googleAuth.expoClientId,
     iosClientId: iosClientId,
     androidClientId: androidClientId,
-    redirectUri: redirectUri,
+    redirectUri: EnvironmentControl.isWeb() ? redirectUri : undefined,
     scopes: ['profile', 'email'],
   });
 
@@ -37,10 +37,12 @@ export const useGoogleAuth = () => {
     setIsLoading(true);
 
     try {
-      // Simplificar para apenas um método de autenticação
-      await promptAsync();
-      
-      // O resto do processamento será feito no useEffect que monitora a resposta
+      // Configure especificamente para Android
+      if (EnvironmentControl.isAndroid()) {
+        await promptAsync({ useProxy: true } as any);
+      } else {
+        await promptAsync();
+      }
     } catch (err) {
       console.error('Google login error:', err);
       const errorMessage = err instanceof Error ? err.message : t('errors.generic_error');

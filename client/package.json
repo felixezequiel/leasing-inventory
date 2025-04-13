@@ -4,9 +4,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android --port 8081 --clear",
-    "ios": "expo start --ios --port 8081 --clear",
-    "web": "expo start --web --port 8081 --clear",
+    "android": "expo start --android --port 8081",
+    "ios": "expo start --ios --port 8081",
+    "web": "expo start --web --port 8081",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
