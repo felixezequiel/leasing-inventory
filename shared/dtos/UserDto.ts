@@ -1,19 +1,27 @@
-export interface UserDto {
+export class UserDTO {
   id: string;
   name: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
+  password: string;
+  googleId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  constructor(data: Partial<UserDTO>) {
+    Object.assign(this, data);
+  }
 }
 
-export interface CreateUserDto {
+export class CreateUserDto {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
 }
 
-export interface UpdateUserDto {
+export class UpdateUserDto {
   name?: string;
   email?: string;
   password?: string;
-} 
+  googleId?: string;
+}

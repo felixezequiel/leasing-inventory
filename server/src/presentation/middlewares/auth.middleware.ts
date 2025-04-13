@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
 import { TokenService } from '@domain/services/TokenService';
@@ -122,7 +122,7 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
   /**
    * Encontra ou cria um usuário baseado na autenticação Google
    */
-  private async findOrCreateGoogleUser(googleId: string, email: string, name: string): Promise<User> {
+  private async findOrCreateGoogleUser(googleId: string, email: string, name: string): Promise<UserDTO> {
     // Primeiro, tenta encontrar por googleId
     let user = await this.userRepository.findByGoogleId(googleId);
     
@@ -202,7 +202,7 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
     next: NextFunction, 
     token: string
   ): Promise<any> {
-    return passport.authenticate('jwt', { session: false }, async (err: any, user: User | false) => {
+    return passport.authenticate('jwt', { session: false }, async (err: any, user: UserDTO | false) => {
       if (err) {
         return response.status(500).json({ error: 'Erro interno durante autenticação' });
       }
@@ -274,11 +274,10 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
   }
 }
 
-// Estende a interface Request do Express para incluir user, token e googleTokens
+// Estende a interface Request do Express para incluir token e googleTokens
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
       token?: string;
       googleTokens?: {
         accessToken: string;

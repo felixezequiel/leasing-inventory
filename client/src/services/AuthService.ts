@@ -4,19 +4,12 @@ import * as SecureStore from 'expo-secure-store';
 import { EnvironmentControl } from '@/utils/environmentControl';
 import eventEmitter from '@/utils/events';
 import { LoginDto, RegisterDto } from '@shared/dtos/AuthDto';
-
-// Define types
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  googleId?: string;
-}
+import { UserDTO } from '@shared/dtos/UserDto';
 
 interface TokensResponse {
   token: string;
   refreshToken?: string;
-  user?: User;
+  user?: UserDTO;
   error?: string;
   requiresLogin?: boolean;
 }
@@ -25,7 +18,7 @@ interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
   refreshToken: string | null;
-  user: User | null;
+  user: UserDTO | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -150,7 +143,7 @@ class AuthService {
   }
 
   // Save auth state to storage
-  private async saveAuthState(token: string, user: User, refreshToken?: string) {
+  private async saveAuthState(token: string, user: UserDTO, refreshToken?: string) {
     await this.setItem('auth_token', token);
     if (refreshToken) {
       await this.setItem('refresh_token', refreshToken);
@@ -460,7 +453,7 @@ class AuthService {
   }
 
   // Get current user
-  getUser(): User | null {
+  getUser(): UserDTO | null {
     return this.state.user;
   }
 

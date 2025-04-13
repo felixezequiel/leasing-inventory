@@ -1,34 +1,34 @@
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 import UserModel from '@infra/database/sequelize/models/User';
 
 export class UserRepositoryImpl implements UserRepository {
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDTO[]> {
     const users = await UserModel.findAll();
     return users.map(user => user.toJSON());
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<UserDTO | null> {
     const user = await UserModel.findByPk(id);
     return user ? user.toJSON() : null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<UserDTO | null> {
     const user = await UserModel.findOne({ where: { email } });
     return user ? user.toJSON() : null;
   }
 
-  async findByGoogleId(googleId: string): Promise<User | null> {
+  async findByGoogleId(googleId: string): Promise<UserDTO | null> {
     const user = await UserModel.findOne({ where: { googleId } });
     return user ? user.toJSON() : null;
   }
 
-  async create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+  async create(userData: Omit<UserDTO, 'id' | 'createdAt' | 'updatedAt'>): Promise<UserDTO> {
     const user = await UserModel.create(userData);
     return user.toJSON();
   }
 
-  async update(id: string, data: Partial<User>): Promise<User | null> {
+  async update(id: string, data: Partial<UserDTO>): Promise<UserDTO | null> {
     const [updatedRowsCount] = await UserModel.update(data, {
       where: { id },
       returning: true

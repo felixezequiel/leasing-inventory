@@ -3,7 +3,7 @@ import { UserService } from '@application/services/UserService';
 import { UserRepositoryImpl } from '@data/repositories/UserRepositoryImpl';
 import { CreateUserDto, UpdateUserDto } from '@shared/dtos/UserDto';
 import { Protected, Public, CurrentUser } from '../decorators/auth.decorator';
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 
 @Controller('/users')
 @Protected()
@@ -48,7 +48,7 @@ export class UserController {
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @CurrentUser() currentUser: User
+    @CurrentUser() currentUser: UserDTO
   ) {
     // Verifica se o usuário está tentando atualizar seu próprio perfil
     if (id !== currentUser.id) {
@@ -67,7 +67,7 @@ export class UserController {
   @Delete('/:id')
   async deleteUser(
     @Param('id') id: string,
-    @CurrentUser() currentUser: User
+    @CurrentUser() currentUser: UserDTO
   ) {
     // Verifica se o usuário está tentando deletar seu próprio perfil
     if (id !== currentUser.id) {

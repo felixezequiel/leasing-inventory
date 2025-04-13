@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 import { Response } from 'express';
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 import { TokenService } from './TokenService';
 import { LoginDto, RegisterDto } from '@shared/dtos/AuthDto';
 
 export interface AuthResult {
-  user?: User;
+  user?: UserDTO;
   token?: string;
   refreshToken?: string;
   error?: string;

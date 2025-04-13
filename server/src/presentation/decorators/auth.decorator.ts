@@ -1,13 +1,13 @@
 import { createParamDecorator } from 'routing-controllers';
 import { Request } from 'express';
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 
 // Decorator para obter o usuário autenticado da requisição
 export function CurrentUser() {
   return createParamDecorator({
     value: action => {
       const request = action.request as Request;
-      return request.user as User;
+      return request.user as UserDTO;
     },
   });
 }

@@ -1,11 +1,11 @@
-import { User } from '@domain/entities/User';
+import { CreateUserDto, UserDTO } from '@shared/dtos/UserDto';
 
 export interface UserRepository {
-  findAll(): Promise<User[]>;
-  findById(id: string): Promise<User | null>;
-  findByEmail(email: string): Promise<User | null>;
-  findByGoogleId(googleId: string): Promise<User | null>;
-  create(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User>;
-  update(id: string, data: Partial<User>): Promise<User | null>;
+  findAll(): Promise<UserDTO[]>;
+  findById(id: string): Promise<UserDTO | null>;
+  findByEmail(email: string): Promise<UserDTO | null>;
+  findByGoogleId(googleId: string): Promise<UserDTO | null>;
+  create(user: CreateUserDto): Promise<UserDTO>;
+  update(id: string, data: Partial<UserDTO>): Promise<UserDTO | null>;
   delete(id: string): Promise<boolean>;
 } 

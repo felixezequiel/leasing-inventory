@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 import { UserRepository } from '@domain/interfaces/repositories/UserRepository';
 
 export class GoogleAuthService {
@@ -60,7 +60,7 @@ export class GoogleAuthService {
   /**
    * Localiza ou cria um usuário baseado nas informações do Google
    */
-  async findOrCreateGoogleUser(googleId: string, email: string, name: string): Promise<User> {
+  async findOrCreateGoogleUser(googleId: string, email: string, name: string): Promise<UserDTO> {
     // Primeiro, tenta encontrar por googleId
     let user = await this.userRepository.findByGoogleId(googleId);
     
@@ -96,7 +96,7 @@ export class GoogleAuthService {
   /**
    * Processa o código de autorização Google e retorna o usuário
    */
-  async processAuthCode(code: string, redirectUri: string): Promise<User> {
+  async processAuthCode(code: string, redirectUri: string): Promise<UserDTO> {
     // Trocar o código do Google por tokens
     const { access_token } = await this.exchangeCodeForTokens(code, redirectUri);
     
@@ -110,7 +110,7 @@ export class GoogleAuthService {
   /**
    * Processa o perfil do Google diretamente
    */
-  async processGoogleProfile(profileData: { googleId: string; email: string; name: string }): Promise<User> {
+  async processGoogleProfile(profileData: { googleId: string; email: string; name: string }): Promise<UserDTO> {
     return this.findOrCreateGoogleUser(
       profileData.googleId,
       profileData.email,

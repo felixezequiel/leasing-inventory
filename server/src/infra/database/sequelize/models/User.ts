@@ -1,8 +1,8 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import sequelize from '../index';
-import { User as UserEntity } from '@domain/entities/User';
+import { UserDTO } from '@shared/dtos/UserDto';
 
-interface UserAttributes extends UserEntity {}
+interface UserAttributes extends UserDTO {}
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
