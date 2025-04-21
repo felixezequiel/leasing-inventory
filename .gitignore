@@ -47,4 +47,6 @@ coverage/
 *.sqlite
 *.sqlite-journal 
 
+*.lock.json
+
 node_modules/
